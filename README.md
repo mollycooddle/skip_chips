@@ -18,13 +18,13 @@
   ## Types of databases:
   - [ ]  Массив
 	  - [ ] sorted table - сортированные по id
-		### __cutty__
+		### __cuttty__
 	  - [ ] unsorted table - неупорядоченные
 		### __mollycooddle__
 
   - [ ] Hash-таблица
 	  - [ ] хеш таблица
-		### __cutty__
+		### __cuttty__
 	  - [ ] хеш таблица
 		### __mollycooddle__
 
