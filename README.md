@@ -1,6 +1,7 @@
   # Polinoms
 
-  # Need to do:
+
+  ## Need to do:
   + хранить
   + вычислять выражения с полиномами
 	+ "a", "b", "tmp" - идентификатор/имя полинома
@@ -9,7 +10,7 @@
   + удалять по id
   + поиск по id
 
-  # Types of databases:
+  ## Types of databases:
   1.  Массив
 	  + sorted table - сортированные по id
 		### __cutty__
@@ -28,13 +29,13 @@
 		+ ABL
 		### __cuttty__
 
-  # Deadline
+  ## Deadline
   + Массивы - 06.03
   + Таблицы - 17.03
   + Деревья - 15.04
   + Отчёт - 22.04
   
-  # Creators: 
+  ## Creators: 
   + Тельнов Анатолий Викторович (mollycooddle)
   + Фролова Софья Юрьевна (cuttty)
 
