@@ -18,15 +18,15 @@
 
   2. Hash-таблица
 	  + хеш таблица
-		# __cutty__
+		### __cutty__
 	  + хеш таблица
-		# __mollycooddle__
+		### __mollycooddle__
 
   3. Поисковое дерево
 		+ красно чёрное дерево
-		# __mollycooddle__
+		### __mollycooddle__
 		+ ABL
-		# __cuttty__
+		### __cuttty__
 
   # Deadline
   + Массивы - 06.03
