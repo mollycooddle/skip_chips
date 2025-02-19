@@ -16,22 +16,22 @@
   + поиск по id
 
   ## Types of databases:
-  [ ]  Массив
-	  [ ] sorted table - сортированные по id
+  - [ ]  Массив
+	  - [ ] sorted table - сортированные по id
 		### __cutty__
-	  [ ] unsorted table - неупорядоченные
+	  - [ ] unsorted table - неупорядоченные
 		### __mollycooddle__
 
-  [ ] Hash-таблица
-	  [ ] хеш таблица
+  - [ ] Hash-таблица
+	  - [ ] хеш таблица
 		### __cutty__
-	  [ ] хеш таблица
+	  - [ ] хеш таблица
 		### __mollycooddle__
 
-  [ ] Поисковое дерево
-		[ ] красно чёрное дерево
+  - [ ] Поисковое дерево
+		- [ ] красно чёрное дерево
 		### __mollycooddle__
-		[ ] ABL
+		- [ ] ABL
 		### __cuttty__
 
   ## Deadline:
