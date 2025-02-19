@@ -1,5 +1,10 @@
   # Polinoms
 
+  ## Content:
+  1. [Need to do](https://github.com/mollycooddle/skip_chips#need-to-do)
+  2. [Types of databases](https://github.com/mollycooddle/skip_chips#types-of-databases)
+  3. [Deadline](https://github.com/mollycooddle/skip_chips#deadline)
+  4. [Creators](https://github.com/mollycooddle/skip_chips#creators)
 
   ## Need to do:
   + хранить
@@ -11,25 +16,25 @@
   + поиск по id
 
   ## Types of databases:
-  1.  Массив
-	  + sorted table - сортированные по id
+  [ ]  Массив
+	  [ ] sorted table - сортированные по id
 		### __cutty__
-	  + unsorted table - неупорядоченные
+	  [ ] unsorted table - неупорядоченные
 		### __mollycooddle__
 
-  2. Hash-таблица
-	  + хеш таблица
+  [ ] Hash-таблица
+	  [ ] хеш таблица
 		### __cutty__
-	  + хеш таблица
+	  [ ] хеш таблица
 		### __mollycooddle__
 
-  3. Поисковое дерево
-		+ красно чёрное дерево
+  [ ] Поисковое дерево
+		[ ] красно чёрное дерево
 		### __mollycooddle__
-		+ ABL
+		[ ] ABL
 		### __cuttty__
 
-  ## Deadline
+  ## Deadline:
   + Массивы - 06.03
   + Таблицы - 17.03
   + Деревья - 15.04
