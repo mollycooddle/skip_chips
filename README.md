@@ -11,15 +11,16 @@
 
   # Types of databases:
   1.  Массив
-	  + sorted table - сортированные по id
-	  + unsorted table - неупорядоченные
+	  + sorted table - сортированные по id  	__cutty__
+	  + unsorted table - неупорядоченные		__mollycooddle__
 
   2. Hash-таблица
-	  + 2 хеш таблицы
+	  + хеш таблица					__1 hash-table - cutty__
+	  + хеш таблица					__2 hash-table - mollycooddle__
 
   3. Поисковое дерево
-		+ красно чёрное дерево
-		+ ABL
+		+ красно чёрное дерево			__mollycooddle__
+		+ ABL					__cuttty__
 
   # Deadline
   + Массивы - 06.03
