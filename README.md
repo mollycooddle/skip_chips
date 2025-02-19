@@ -12,9 +12,9 @@
   # Types of databases:
   1.  Массив
 	  + sorted table - сортированные по id
-		# __cutty__
+		### __cutty__
 	  + unsorted table - неупорядоченные
-		# __mollycooddle__
+		### __mollycooddle__
 
   2. Hash-таблица
 	  + хеш таблица
