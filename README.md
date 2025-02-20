@@ -23,9 +23,9 @@
 		### __mollycooddle__
 
   - [ ] Hash-таблица
-	  - [ ] sorted table
+	  - [ ] hash table
 		### __cuttty__
-	  - [ ] unsorted table
+	  - [ ] hash table
 		### __mollycooddle__
 
   - [ ] Поисковое дерево
