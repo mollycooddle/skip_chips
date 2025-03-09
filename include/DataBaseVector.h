@@ -7,8 +7,9 @@
 
 #include "polinom.h"
 
-class DataBaseVector : protected Polinom<std::string> {
+class DataBaseVector : public Polinom<std::string> {
 public:
+    DataBaseVector(const std::string& str) : Polinom<std::string>(str) {}
     void sort() {
         for (int i = 0; i < monoms.size(); i++) {
             for (int j = i + 1; j < monoms.size(); j++) {
