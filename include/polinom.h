@@ -1,15 +1,10 @@
-//
-// Created by Софья Фролова  on 09.03.2025.
-//
-
-#ifndef LIST_POLINOM_H
-#define LIST_POLINOM_H
+﻿#pragma once
 
 #include <iostream>
-#include "string"
-#include "list.h"
+#include <string>
 #include <vector>
 #include <list>
+#include <algorithm>
 
 
 struct Monom {
@@ -76,7 +71,9 @@ struct Monom {
             this->degree = 0;
             return;
         }
+
         int tmp = 0;
+
         for (int i = 0; i < str.length(); i++) {
             if (str[i] == '^') {
                 tmp++;
@@ -99,48 +96,95 @@ struct Monom {
         return m1.coeff == m2.coeff && m1.degree == m2.degree;
     }
 
+    //friend bool operator> (const Monom& m1, const Monom& m2) {
+    //    if (m1.degree == m2.degree) {
+    //        if (m1.coeff > m2.coeff) {
+    //            return true;
+    //        } else {
+    //            return false;
+    //        }
+    //    }
+    //    else {
+    //        if (m1.degree > m2.degree) {
+    //            return true;
+    //        } else {
+    //            return false;
+    //        }
+    //    }
+    //}
+    //friend bool operator< (const Monom& m1, const Monom& m2) {
+    //    if (m1.degree == m2.degree) {
+    //        if (m1.coeff > m2.coeff) {
+    //            return false;
+    //        } else {
+    //            return true;
+    //        }
+    //    }
+    //    else {
+    //        if (m1.degree > m2.degree) {
+    //            return false;
+    //        } else {
+    //            return true;
+    //        }
+    //    }
+    //}
+
     friend bool operator> (const Monom& m1, const Monom& m2) {
         if (m1.degree == m2.degree) {
             if (m1.coeff > m2.coeff) {
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }
         else {
             if (m1.degree > m2.degree) {
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }
     }
+
     friend bool operator< (const Monom& m1, const Monom& m2) {
         if (m1.degree == m2.degree) {
             if (m1.coeff > m2.coeff) {
                 return false;
-            } else {
+            }
+            else {
                 return true;
             }
         }
         else {
             if (m1.degree > m2.degree) {
                 return false;
-            } else {
+            }
+            else {
                 return true;
             }
         }
     }
 
+    friend bool operator<=(const Monom& m1, const Monom& m2) {
+        return !(m1 > m2);
+    }
+
+    friend bool operator>=(const Monom& m1, const Monom& m2) {
+        return !(m1 < m2);
+    }
 };
 
 template <typename T>
-class Polinom : protected List <T> {
+class Polinom{
 protected:
     std::list<std::string> polinom;
     std::vector<Monom> monoms;
 
 public:
+    Polinom() = default;
+
     explicit Polinom(const std::string& str) {
         parsePolinom(str);
         parseMonom();
@@ -168,8 +212,32 @@ public:
         std::cout << std::endl;
     }
 
-    int length() {
+    int size() const {
         return monoms.size();
+    }
+
+    friend bool operator==(const Polinom& m1, const Polinom& m2) {
+        return m1.monoms == m2.monoms;
+    }
+
+    friend bool operator<(const Polinom& m1, const Polinom& m2) {
+        int flag = 0;
+        for (int i = 0; i < m1.size(); i++) {
+            if (m1.monoms[i] >= m2.monoms[i]) flag = 1;
+        }
+        
+        if (flag == 1) return false;
+        return true;
+    }
+
+    friend bool operator>(const Polinom<std::string>& m1, const Polinom<std::string>& m2) {
+        int flag = 0;
+        for (int i = 0; i < m1.size(); i++) {
+            if (m1.monoms[i] <= m2.monoms[i]) flag = 1;
+        }
+
+        if (flag == 1) return false;
+        return true;
     }
 
 private:
@@ -219,7 +287,13 @@ private:
         }
     }
 
+public:
+    friend std::ostream& operator<< (std::ostream& os, Polinom& pol) {
+        for (const std::string& term : pol.polinom) {
+            os << term << "   ";
+        }
+
+        os << std::endl;
+        return os;
+    }
 };
-
-#endif //LIST_POLINOM_H
-

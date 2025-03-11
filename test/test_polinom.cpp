@@ -9,7 +9,7 @@ TEST(polinom, can_create_polinom) {
 }
 TEST(polinom, can_parse_polinom) {
     Polinom<std::string> p1("2x^6y^7z^8+2x^6y^7z^8+2x^6y^7z^8");
-    ASSERT_EQ(3, p1.length());
+    ASSERT_EQ(3, p1.size());
 }
 
 TEST(polinom, can_add_monom) {
