@@ -16,10 +16,10 @@
   + поиск по id
 
   ## Types of databases:
-  - [ ]  Массив
-	  - [ ] sorted table - сортированные по id
+  - [ X ]  Массив
+	  - [ X ] sorted table - сортированные по id
 		### __cuttty__
-	  - [ ] unsorted table - неупорядоченные
+	  - [ X ] unsorted table - неупорядоченные
 		### __mollycooddle__
 
   - [ ] Hash-таблица
