@@ -5,6 +5,9 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <stdexcept>
+#include <regex>
+#include <sstream>
 
 
 struct Monom {
@@ -96,39 +99,6 @@ struct Monom {
         return m1.coeff == m2.coeff && m1.degree == m2.degree;
     }
 
-    //friend bool operator> (const Monom& m1, const Monom& m2) {
-    //    if (m1.degree == m2.degree) {
-    //        if (m1.coeff > m2.coeff) {
-    //            return true;
-    //        } else {
-    //            return false;
-    //        }
-    //    }
-    //    else {
-    //        if (m1.degree > m2.degree) {
-    //            return true;
-    //        } else {
-    //            return false;
-    //        }
-    //    }
-    //}
-    //friend bool operator< (const Monom& m1, const Monom& m2) {
-    //    if (m1.degree == m2.degree) {
-    //        if (m1.coeff > m2.coeff) {
-    //            return false;
-    //        } else {
-    //            return true;
-    //        }
-    //    }
-    //    else {
-    //        if (m1.degree > m2.degree) {
-    //            return false;
-    //        } else {
-    //            return true;
-    //        }
-    //    }
-    //}
-
     friend bool operator> (const Monom& m1, const Monom& m2) {
         if (m1.degree == m2.degree) {
             if (m1.coeff > m2.coeff) {
@@ -186,6 +156,7 @@ public:
     Polinom() = default;
 
     explicit Polinom(const std::string& str) {
+        validatePolynomial(str);
         parsePolinom(str);
         parseMonom();
     }
@@ -244,6 +215,7 @@ private:
     void parsePolinom(const std::string& str) {
         std::string substr;
         for (int i = 0; i < str.length(); i++) {
+
             if (str[i] == '+') {
                 polinom.push_back(substr);
                 substr = "";
@@ -263,7 +235,11 @@ private:
     }
 
     void parseMonom() {
+        std::string temp = "";
+
         for (const std::string &it : polinom) {
+            temp += it;
+            
             Monom res;
             int tmp = 0;
             for (int i = 0; i < it.length(); i++) {
@@ -279,11 +255,34 @@ private:
                     }
                 }
             }
-            if (res.degree < 100) {
+            if (res.degree > 999) {
                 throw std::runtime_error("Incorrect input. Please, try again");
             }
 
             monoms.push_back(res);
+        }
+
+    }
+
+    void validateMonom(const std::string& monomStr) {
+        std::regex monomPattern(R"((-?\d+)x\^([0-9])y\^([0-9])z\^([0-9]))");
+
+        if (!std::regex_match(monomStr, monomPattern)) {
+            throw std::runtime_error("Invalid monom format: " + monomStr);
+        }
+    }
+
+    void validatePolynomial(const std::string& polynomialStr) {
+        std::stringstream ss(polynomialStr);
+        std::string monomStr;
+
+        while (ss >> monomStr) {
+            try {
+                validateMonom(monomStr);
+            }
+            catch (const std::runtime_error& e) {
+                throw std::runtime_error("Invalid polynomial: " + std::string(e.what()));
+            }
         }
     }
 

@@ -14,14 +14,14 @@ public:
     Polinom& operator[](size_t ind)
     {
         if ((ind >= size()) || (ind < 0))
-            throw "Index out of range";
+            throw std::runtime_error("Index out of range");
 
         return sql[ind];
     }
     const Polinom& operator[](size_t ind) const
     {
         if ((ind >= size()) || (ind < 0))
-            throw "Index out of range";
+            throw std::runtime_error("Index out of range");
 
         return sql[ind];
     }
