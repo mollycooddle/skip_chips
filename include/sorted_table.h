@@ -10,9 +10,11 @@ private:
     std::vector<std::pair<int, Polinom> > sql;
 
 public:
+
     SortedTable() = default;
-    SortedTable (int id, Polinom pol) {
-        std::pair<int, Polinom>  temp(id, pol);
+    SortedTable(int id, Polinom pol) {
+        sql.push_back(std::pair<int, Polinom> (id, pol));
+
     }
     void sort(){
         if (!sql.empty()) {
@@ -50,6 +52,9 @@ public:
     }
 
     void insert(int id, Polinom pol) {
+        if (this->find(id) != sql.end()) {
+            return;
+        }
         std::pair<int, Polinom> tmp (id, pol);
         sql.push_back(tmp);
         sort();
@@ -84,5 +89,24 @@ public:
 
         return sql.end();
     }
+
+    int size() {
+        return sql.size();
+    }
+
+    friend bool operator==(SortedTable& t1, SortedTable& t2) {
+        if (t1.size() != t2.size()) {
+            return false;
+        }
+        for (int i = 0; i < t1.size(); i++) {
+            if (t1.sql[i]!= t2.sql[i]) return false;
+        }
+        return true;
+    }
+
+    friend bool operator!=(SortedTable t1, SortedTable t2) {
+        return !(t1 == t2);
+    }
+
 
 };
