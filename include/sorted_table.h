@@ -3,90 +3,86 @@
 #include "polinom.h"
 #include <sstream>
 #include <algorithm>
+#include <utility>
 
-class DataBaseVector : public Polinom<std::string> {
-
-    std::vector<Polinom<std::string>> sql;
+class SortedTable {
+private:
+    std::vector<std::pair<int, Polinom> > sql;
 
 public:
-    DataBaseVector(const std::string& str = "") {
-        sql.push_back(Polinom(str));
+    SortedTable() = default;
+    SortedTable (int id, Polinom pol) {
+        std::pair<int, Polinom>  temp(id, pol);
     }
-protected:
-    void sortPolynomialsByString() {
-        auto compareByString = [](Polinom<std::string> p1, Polinom<std::string> p2) {
-            std::ostringstream oss1, oss2;
-            oss1 << p1;
-            oss2 << p2;
-            return oss1.str() < oss2.str();
-            };
-
-        std::sort(sql.begin(), sql.end(), compareByString);
-    }
-public:
-    Polinom& operator[](size_t ind)
-    {
-        if ((ind >= size()) || (ind < 0))
-            throw "Index out of range";
-
-        return sql[ind];
-    }
-    const Polinom& operator[](size_t ind) const
-    {
-        if ((ind >= size()) || (ind < 0))
-            throw "Index out of range";
-
-        return sql[ind];
-    }
-
-    void insert(const Polinom<std::string>& pol) {
-        sql.push_back(pol);
-        sortPolynomialsByString();
-    }
-
-    void erase(int i) {
-        if (i >= 0 && i < sql.size()) {
-            sql.erase(sql.begin() + i);
+    void sort(){
+        if (!sql.empty()) {
+            quick_sort( 0, sql.size() - 1);
         }
-        else {
-            throw std::runtime_error("Index out of range");
+
+    }
+
+    void quick_sort(int low, int high) {
+        if (low < high) {
+            int pivot_value = sql[(low + high) / 2].first;
+            int i = low - 1;
+            int j = high + 1;
+
+            while (true) {
+                do {
+                    i++;
+                } while (sql[i].first < pivot_value);
+
+                do {
+                    j--;
+                } while (sql[j].first > pivot_value);
+
+                if (i >= j) {
+                    break;
+                }
+
+                swap(sql[i], sql[j]);
+            }
+
+            int pivot_index = j;
+            quick_sort( low, pivot_index);
+            quick_sort( pivot_index + 1, high);
         }
     }
 
-    int find(Polinom<std::string> pol) {
+    void insert(int id, Polinom pol) {
+        std::pair<int, Polinom> tmp (id, pol);
+        sql.push_back(tmp);
+        sort();
+    }
+
+    void erase(int id) {
+        auto it = find(id);
+        if (it != sql.end()) {
+            sql.erase(it);
+        }
+    }
+
+
+    std::vector<std::pair<int, Polinom> >::const_iterator find(int target_id) {
         int left = 0;
-        int right = sql.size() - 1;
+        int right = static_cast<int>(sql.size()) - 1;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
-            std::ostringstream ossMid, ossTarget;
-            ossMid << sql[mid];
-            ossTarget << pol;
+            const int current_id = sql[mid].first;
 
-            if (ossMid.str() == ossTarget.str()) {
-                return mid;
+            if (current_id == target_id) {
+                return sql.begin() + mid;
             }
 
-            if (ossMid.str() < ossTarget.str()) {
+            if (current_id < target_id) {
                 left = mid + 1;
-            }
-            else {
+            } else {
                 right = mid - 1;
             }
         }
 
-        return -1;
+        return sql.end();
     }
 
-    size_t size() const {
-        return sql.size();
-    }
-
-    friend std::ostream& operator<< (std::ostream& os, DataBaseVector& sql) {
-        for (int i = 1; i < sql.size(); i++) {
-            os << i - 1 << "   ";
-            os << sql[i];
-        }
-        return os;
-    }
 };
