@@ -43,8 +43,8 @@ public:
                 sql.erase(sql.begin() + i);
                 return;
             }
-            else throw std::runtime_error("Element with id " + std::to_string(id) + " not found");
         }
+        throw std::runtime_error("Element with id " + std::to_string(id) + " not found");
     }
 
     //Использую бинарынй поиск, который выполняется за O(log n)
@@ -82,6 +82,11 @@ public:
 
     bool operator!=(const SortedTable& other) const {
         return !(sql == other.sql);
+    }
+    void print() {
+        for (int i = 0; i < sql.size(); i++) {
+            std::cout << sql[i].first << " " << sql[i].second << std::endl;
+        }
     }
 
 };

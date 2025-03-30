@@ -15,6 +15,12 @@ TEST(SortedTable, can_get_size_of_empty_table) {
     SortedTable table;
     EXPECT_EQ(table.size(), 0);
 }
+TEST (SortedTable, can_get_size_of_not_empty_table) {
+    SortedTable table;
+    Polinom p("2x^6y^7z^8+8x^5y^7z^8+2x^9y^7z^8");
+    table.insert(1, p);
+    EXPECT_EQ(table.size(), 1);
+}
 
 TEST(SortedTable, can_insert_pair_in_empty_table) {
     SortedTable table;
@@ -38,6 +44,32 @@ TEST(SortedTableTest, insert_same_pair) {
     Polinom p;
     table.insert(1, p);
     ASSERT_ANY_THROW(table.insert(1, p));
+}
+
+TEST(SortedTable, can_erase_pair_1) {
+    SortedTable table;
+    Polinom p("2x^6y^7z^8+8x^5y^7z^8+2x^9y^7z^8");
+    table.insert(1, p);
+
+    Polinom p1("2x^6y^7z^8+8x^5y^7z^8+2x^7y^7z^7");
+    table.insert(5, p1);
+
+    table.erase(5);
+
+    EXPECT_EQ(table.size(), 1);
+}
+
+TEST(SortedTable, can_erase_pair_2) {
+    SortedTable table;
+    Polinom p("2x^6y^7z^8+8x^5y^7z^8+2x^9y^7z^8");
+    table.insert(1, p);
+
+    Polinom p1("2x^6y^7z^8+8x^5y^7z^8+2x^7y^7z^7");
+    table.insert(5, p1);
+
+    table.erase(1);
+
+    EXPECT_EQ(table.size(), 1);
 }
 
 TEST(SortedTable, super_test) {
