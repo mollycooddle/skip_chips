@@ -237,7 +237,7 @@ TEST(polinom, add_empty_polinom) {
     ASSERT_EQ(result.monoms, p1.monoms);
 }
 
-TEST(polinom, super_test) {
+TEST(polinom, super_test_1) {
     std::string str1 = "x^3y^0z^0+x^1y^0z^0+x^0y^0z^0";
     std::string str2 = "x^2y^0z^0+x^0y^0z^0";
     std::string chekStr = "x^5y^0z^0+2x^3y^0z^0+x^2y^0z^0+x^1y^0z^0+x^0y^0z^0";

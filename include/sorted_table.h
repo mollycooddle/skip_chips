@@ -14,67 +14,74 @@ public:
     SortedTable() = default;
     SortedTable(int id, Polinom pol) {
         sql.push_back(std::pair<int, Polinom> (id, pol));
-
     }
 
+    //Вставка элемента в таблицу за O(n)
     void insert(int id, Polinom pol) {
-        if (this->find(id) != sql.end()) {
-            return;
-        }
-        std::pair<int, Polinom> tmp (id, pol);
-        /*for (int i = sql.size(); i > 0; i--) {
-            if (id < )
-        };*/
 
-    }
+        sql.push_back(std::pair<int, Polinom> (id, pol));
 
-    void erase(int id) {
-        auto it = find(id);
-        if (it != sql.end()) {
-            sql.erase(it);
+        for (int i = sql.size() - 1; i > 0; i--) {
+            if (sql[i].first < sql[i - 1].first) {
+                std::swap(sql[i], sql[i - 1]);
+            }
+            else if (sql[i-1].first == id) {
+                this->erase(id);
+                throw std::runtime_error("Element with id " + std::to_string(id) + " already exists");
+            }
         }
     }
 
-
-    std::vector<std::pair<int, Polinom> >::const_iterator find(int target_id) {
-        int left = 0;
-        int right = static_cast<int>(sql.size()) - 1;
-
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            const int current_id = sql[mid].first;
-
-            if (current_id == target_id) {
-                return sql.begin() + mid;
-            }
-
-            if (current_id < target_id) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
+    //Удаление элемента из таблицы за O(n)
+    void erase (int id) {
+        if (sql.empty()) {
+            throw std::runtime_error("Table is empty");
         }
 
-        return sql.end();
+        for (int i = 0; i < sql.size(); i++) {
+            if (sql[i].first == id) {
+                sql.erase(sql.begin() + i);
+                return;
+            }
+            else throw std::runtime_error("Element with id " + std::to_string(id) + " not found");
+        }
+    }
+
+    //Использую бинарынй поиск, который выполняется за O(log n)
+    Polinom find(int id) {
+    int left = 0;
+    int right = sql.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        int current_id = sql[mid].first;
+
+        if (current_id == id) {
+            return sql[mid].second;  // метод для std::pair
+        } else if (current_id < id) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    throw std::out_of_range("Element with id " + std::to_string(id) + " not found");
     }
 
     int size() {
         return sql.size();
     }
 
-    friend bool operator==(SortedTable& t1, SortedTable& t2) {
-        if (t1.size() != t2.size()) {
-            return false;
-        }
-        for (int i = 0; i < t1.size(); i++) {
-            if (t1.sql[i]!= t2.sql[i]) return false;
-        }
-        return true;
+    bool empty() {
+        return sql.empty();
     }
 
-    friend bool operator!=(SortedTable t1, SortedTable t2) {
-        return !(t1 == t2);
+    bool operator==(const SortedTable& other) const {
+        return sql == other.sql;
     }
 
+    bool operator!=(const SortedTable& other) const {
+        return !(sql == other.sql);
+    }
 
 };
