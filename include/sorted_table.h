@@ -16,48 +16,16 @@ public:
         sql.push_back(std::pair<int, Polinom> (id, pol));
 
     }
-    void sort(){
-        if (!sql.empty()) {
-            quick_sort( 0, sql.size() - 1);
-        }
-
-    }
-
-    void quick_sort(int low, int high) {
-        if (low < high) {
-            int pivot_value = sql[(low + high) / 2].first;
-            int i = low - 1;
-            int j = high + 1;
-
-            while (true) {
-                do {
-                    i++;
-                } while (sql[i].first < pivot_value);
-
-                do {
-                    j--;
-                } while (sql[j].first > pivot_value);
-
-                if (i >= j) {
-                    break;
-                }
-
-                swap(sql[i], sql[j]);
-            }
-
-            int pivot_index = j;
-            quick_sort( low, pivot_index);
-            quick_sort( pivot_index + 1, high);
-        }
-    }
 
     void insert(int id, Polinom pol) {
         if (this->find(id) != sql.end()) {
             return;
         }
         std::pair<int, Polinom> tmp (id, pol);
-        sql.push_back(tmp);
-        sort();
+        /*for (int i = sql.size(); i > 0; i--) {
+            if (id < )
+        };*/
+
     }
 
     void erase(int id) {

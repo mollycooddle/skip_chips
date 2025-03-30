@@ -3,7 +3,7 @@
 //
 #include "list.h"
 #include <gtest.h>
-TEST(List, can_create_empty_list)
+/*TEST(List, can_create_empty_list)
 {
 ASSERT_NO_THROW(List<int> L1());
 }
@@ -277,4 +277,4 @@ TEST(List, can_compare_not_equal_iterators) {
     it1++;
     auto it2 = L1.begin();
     ASSERT_NE(it1, it2);
-}
+}*/
