@@ -202,7 +202,6 @@ TEST(polinom, polinom_copy_operations) {
     Polinom p1("3x^2y^3z^4+2x^5y^1z^2");
     Polinom p2(p1);
     Polinom p3 = p1;
-
     ASSERT_EQ(p1.monoms, p2.monoms);
     ASSERT_EQ(p1.monoms, p3.monoms);
 }
@@ -238,6 +237,17 @@ TEST(polinom, add_empty_polinom) {
 }
 
 TEST(polinom, super_test_1) {
+    std::string str1 = "x^3y^0z^0+x^1y^0z^0+x^0y^0z^0";
+    std::string str2 = "x^2y^0z^0+x^0y^0z^0";
+    std::string chekStr = "x^5y^0z^0+2x^3y^0z^0+x^2y^0z^0+x^1y^0z^0+x^0y^0z^0";
+    Polinom p1(str1);
+    Polinom p2(str2);
+    Polinom chek(chekStr);
+    EXPECT_EQ(p1*p2, chek);
+
+}
+
+TEST(polinom, super_test_2) {
     std::string str1 = "x^3y^0z^0+x^1y^0z^0+x^0y^0z^0";
     std::string str2 = "x^2y^0z^0+x^0y^0z^0";
     std::string chekStr = "x^5y^0z^0+2x^3y^0z^0+x^2y^0z^0+x^1y^0z^0+x^0y^0z^0";

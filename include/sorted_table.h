@@ -26,7 +26,7 @@ public:
                 std::swap(sql[i], sql[i - 1]);
             }
             else if (sql[i-1].first == id) {
-                this->erase(id);
+               // this->erase(id);
                 throw std::runtime_error("Element with id " + std::to_string(id) + " already exists");
             }
         }

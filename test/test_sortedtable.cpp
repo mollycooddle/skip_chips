@@ -131,6 +131,22 @@ TEST(SortedTable, sort) {
     EXPECT_EQ(table.find(2), p2);
     EXPECT_EQ(table.find(3), p);
 }
+TEST(SortedTable, sort_1) {
+    SortedTable table;
+    Polinom p("2x^6y^7z^8+8x^5y^7z^8");
+    Polinom p1("5x^9y^7z^8+8x^5y^7z^8+2x^7y^7z^7");
+    Polinom p2("14x^9y^7z^8+11x^7y^7z^8");
+
+    table.insert(3, p);
+    table.insert(1, p1);
+    table.insert(2, p2);
+    table.erase(2);
+
+    EXPECT_EQ(table.find(1),p1);
+    EXPECT_ANY_THROW(table.find(2));
+    EXPECT_EQ(table.find(3), p);
+}
+
 
 TEST(SortedTable, operatorEqualWhenEqual) {
     SortedTable t1, t2;

@@ -137,6 +137,7 @@ public:
     explicit Polinom(const std::string& str) {
         parsePolinom(str);
         parseMonom();
+        //combineLikeTerms();
 
 
     }
@@ -335,11 +336,26 @@ public:
                     temp.monoms.push_back(product);
                 }
             }
-            temp.combineLikeTerms();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             result = result + temp;
         }
 
-        result.combineLikeTerms();
         return result;
     }
 
