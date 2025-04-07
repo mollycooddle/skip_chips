@@ -5,122 +5,61 @@
 #ifndef POLINOM_AVL_TREE_H
 #define POLINOM_AVL_TREE_H
 
-#include "polinom.h"
-#include "list.h"
-#include <list>
+#include <iostream>
 #include <algorithm>
-#include <utility>
+#include <queue>
 
-template <class Tkey, class Tvalue>
+template <typename TKey, typename TValue>
+struct TTableRec {
+    TKey key;
+    TValue value;
+
+    TTableRec() = default;
+    TTableRec(const TKey& k, const TValue& v) : key(k), value(v) {}
+
+    bool operator==(const TTableRec& other) const {
+        return key == other.key && value == other.value;
+    }
+
+    bool operator!=(const TTableRec& other) const {
+        return !(*this == other);
+    }
+};
+
+template <typename TKey, typename TValue>
+struct Node {
+    TTableRec<TKey, TValue> data;
+    Node* left;
+    Node* right;
+    int height;
+
+    Node(const TKey& key, const TValue& value)
+            : data(key, value), left(nullptr), right(nullptr), height(1) {}
+};
+
+template <typename TKey, typename TValue>
 class AVLTree {
 private:
-    struct TTableRec {
-        Tkey key;
-        Tvalue value;
-    };
+    Node<TKey, TValue>* root;
+    size_t treeSize;
 
-    struct Node {
-        TTableRec data;
-        Node* left;
-        Node* right;
-        int height;
-
-        Node() {
-            left = nullptr;
-            right = nullptr;
-            height = 0;
-            data.key = 0;
-            data.value = "";
-        }
-
-        Node(Tkey nkey, Tvalue nvalue) {
-            left = nullptr;
-            right = nullptr;
-            height = 1;
-            data.key = nkey;
-            data.value = nvalue;
-        }
-
-        bool operator== (Node*b){
-            // Оба узла nullptr
-            if (!this && !b) return true;
-
-            // Один из узлов nullptr
-            if (!this || !b) return false;
-
-            // Сравниваем данные текущего узла
-            if (this->data.key != b->data.key || this->data.value != b->data.value) {
-                return false;
-            }
-
-            // Рекурсивно сравниваем левые и правые поддеревья
-            return (this->left == b->left) && (this->right == b->right);
-        }
-    };
-
-    Node* root;
-
-//    Node* balance(Node* curr) {
-//
-//        if (curr->left == nullptr || curr->right == nullptr) return nullptr;
-//
-//        int hl = curr->left->height;
-//        int hr = curr->right->height;
-//
-//        if (hr-hl == 2 || hr-hl == -2) {
-//            if (hr-hl == 2) {
-//                if(curr->left->left->height - curr->left->right->height == -1) {
-//                    curr->left = rotateLeft(curr->left);
-//                    balance (curr->left);
-//                }
-//
-//                if(curr->left->left->height - curr->left->right->height == 1) {
-//                    curr->right = rotateRight(curr);
-//                    balance (curr->right);
-//                }
-//            }
-//
-//            if (hr-hl == -2) {
-//                if(curr->left->left->height - curr->left->right->height == 1) {
-//                    curr->left = rotateRight(curr->right);
-//                    balance (curr->left);
-//
-//                }
-//
-//                if(curr->left->left->height - curr->left->right->height == 1) {
-//                    curr->right = rotateLeft(curr);
-//                    balance (curr->right);
-//                }
-//            }
-//        }
-//        return curr;
-//    }
-//
-//    Node* rotateRight(Node* a) {
-//        Node * b = a->left;
-//        a->left = b->right;
-//        b->right = a;
-//        a->height = std::max(a->left->height, a->right->height);
-//        b->height = std::max(b->left->height, b->right->height);
-//        return b;
-//    }
-//
-//    Node* rotateLeft(Node* a) {
-//        Node * b = a->right;
-//        a->right = b->left;
-//        b->left = a;
-//        updateHeight(a);
-//        updateHeight(b);
-//        return b;
-//    }
-
-    int height(Node* node) {
+    int getHeight(Node<TKey, TValue>* node) const {
         return node ? node->height : 0;
     }
 
-    Node* rightRotate(Node* y) {
-        Node* x = y->left;
-        Node* T2 = x->right;
+    int getBalanceFactor(Node<TKey, TValue>* node) const {
+        return node ? getHeight(node->left) - getHeight(node->right) : 0;
+    }
+
+    void updateHeight(Node<TKey, TValue>* node) {
+        if (node) {
+            node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+        }
+    }
+
+    Node<TKey, TValue>* rightRotate(Node<TKey, TValue>* y) {
+        Node<TKey, TValue>* x = y->left;
+        Node<TKey, TValue>* T2 = x->right;
 
         x->right = y;
         y->left = T2;
@@ -131,9 +70,9 @@ private:
         return x;
     }
 
-    Node* leftRotate(Node* x) {
-        Node* y = x->right;
-        Node* T2 = y->left;
+    Node<TKey, TValue>* leftRotate(Node<TKey, TValue>* x) {
+        Node<TKey, TValue>* y = x->right;
+        Node<TKey, TValue>* T2 = y->left;
 
         y->left = x;
         x->right = T2;
@@ -144,200 +83,170 @@ private:
         return y;
     }
 
-    Node* balance(Node* node) {
+    Node<TKey, TValue>* balance(Node<TKey, TValue>* node) {
+        if (!node) return nullptr;
+
         updateHeight(node);
-        int bf = balanceFactor(node);
+        int balanceFactor = getBalanceFactor(node);
 
-        // Left Heavy
-        if (bf > 1) {
-            if (balanceFactor(node->left) >= 0)
-                return rightRotate(node);
-            else {
+        if (balanceFactor > 1) {
+            if (getBalanceFactor(node->left) < 0) {
                 node->left = leftRotate(node->left);
-                return rightRotate(node);
             }
+            return rightRotate(node);
         }
-
-        // Right Heavy
-        if (bf < -1) {
-            if (balanceFactor(node->right) <= 0)
-                return leftRotate(node);
-            else {
+        if (balanceFactor < -1) {
+            if (getBalanceFactor(node->right) > 0) {
                 node->right = rightRotate(node->right);
-                return leftRotate(node);
             }
+            return leftRotate(node);
         }
-
         return node;
     }
 
-    int balanceFactor(Node* node) {
-        return height(node->left) - height(node->right);
-    }
-
-    void updateHeight(Node* node) {
-        node->height = 1 + std::max(height(node->left), height(node->right));
-    }
-
-     Tvalue find (Tkey key, Node* curr) {
-        if (!curr) throw "This tree doesn't exist";
-        if (key == curr->data.key) {return curr->data.value;}
-        if (key < curr->data.key) {return find(key, curr->left);}
-        if (key > curr->data.key) {return find(key, curr->right);}
-    }
-
-    // Работает за O(log n)
-    Node* insert(Node* curr, Tkey key, Tvalue value) {
-        if (!curr) {
-            curr = new Node(key, value);
+    Node<TKey, TValue>* insert(Node<TKey, TValue>* node, const TKey& key, const TValue& value) {
+        if (!node) {
+            treeSize++;
+            return new Node<TKey, TValue>(key, value);
         }
-        else {
-            if (key == curr->data.key) throw std::runtime_error("This key already exists");
-            if (key < curr->data.key) {
-                curr->left = insert(curr->left, key, value);
-                balance(curr);
-                updateHeight(curr);
-            } else {
-                curr->right = insert(curr->right, key, value);
-                balance(curr);
-                updateHeight(curr);
-            }
-        }
-        balance(curr);
-        updateHeight(curr);
-        return curr;
-    }
 
-    //Работает за O(log n)
-    Node* erase (Node* curr, Tkey key) {
-        //if (!curr) throw std::runtime_error("This tree doesn't exist");
-        if (key == root->data.key) throw std::runtime_error("Can't delete root");
-        if (key < curr->data.key) {
-
-            curr->left = erase(curr->left, key);
-        } else if (key > curr->data.key) {
-            curr->right = erase(curr->right, key);
+        if (key < node->data.key) {
+            node->left = insert(node->left, key, value);
+        } else if (key > node->data.key) {
+            node->right = insert(node->right, key, value);
         } else {
-            // Удаление листа
-            if (curr->left == nullptr && curr->right == nullptr) {
-                delete curr;
-                return nullptr;
-            }
-            // Удаление узла, если нет левого поддерева
-            if (curr->left == nullptr) {
-                Node* tmp = curr->right;
-                delete curr;
-                return balance(tmp);
-            }
-            // Удаление узла, если нет правого поддерева
-            if (curr->right == nullptr) {
-                Node* tmp = curr->left;
-                delete curr;
-                return balance(tmp);
-            }
-            // Удаление узла с двумя поддеревьями
-            Node* tmp = curr->right;
-            while (tmp->left != nullptr) {
-                tmp = tmp->left;
-            }
-            curr->data.key = tmp->data.key;
-            curr->data.value = tmp->data.value;
-            curr->right = erase(curr->right, tmp->data.key);
-        }
-        updateHeight(curr);
-        return balance(curr);
-    }
-
-    void print(Node* curr) {
-        if (!curr) return;
-        print(curr->left);
-        std::cout << curr->data.key << " " << curr->data.value << std::endl;
-        print(curr->right);
-    }
-
-    bool compareNodes(const Node* a, const Node* b) const {
-        // Оба узла nullptr
-        if (!a && !b) return true;
-
-        // Один из узлов nullptr
-        if (!a || !b) return false;
-
-        // Сравниваем данные текущего узла
-        if (a->data.key != b->data.key || a->data.value != b->data.value) {
-            return false;
+            throw std::runtime_error("Key already exists");
         }
 
-        // Рекурсивно сравниваем левые и правые поддеревья
-        return compareNodes(a->left, b->left) && compareNodes(a->right, b->right);
+        return balance(node);
     }
 
-    int size(Node* node) {
-        if (node == nullptr) return 0;  // База рекурсии: высота NIL-узла = 0
-        int leftHeight = size(node->left);
-        int rightHeight = size(node->right);
-        return 1 + std::max(leftHeight, rightHeight);  // Выбираем максимальную высоту
+    Node<TKey, TValue>* findMin(Node<TKey, TValue>* node) const {
+        while (node && node->left) {
+            node = node->left;
+        }
+        return node;
     }
 
+    Node<TKey, TValue>* erase(Node<TKey, TValue>* node, const TKey& key) {
+        if (!node) return nullptr;
+
+        if (key < node->data.key) {
+            node->left = erase(node->left, key);
+        } else if (key > node->data.key) {
+            node->right = erase(node->right, key);
+        } else {
+            if (!node->left || !node->right) {
+                Node<TKey, TValue>* temp = node->left ? node->left : node->right;
+                if (!temp) {
+                    temp = node;
+                    node = nullptr;
+                } else {
+                    *node = *temp;
+                }
+                delete temp;
+                treeSize--;
+            } else {
+                Node<TKey, TValue>* temp = findMin(node->right);
+                node->data = temp->data;
+                node->right = erase(node->right, temp->data.key);
+            }
+        }
+
+        if (!node) return nullptr;
+
+        return balance(node);
+    }
+
+    bool isEqual(Node<TKey, TValue>* node1, Node<TKey, TValue>* node2) const {
+        if (!node1 && !node2) return true;
+        if (!node1 || !node2) return false;
+        return node1->data == node2->data &&
+               isEqual(node1->left, node2->left) &&
+               isEqual(node1->right, node2->right);
+    }
+
+    void print(Node<TKey, TValue>* node, std::ostream& os) const {
+        if (node) {
+            print(node->left, os);
+            os << node->data.key << ": " << node->data.value << "\n";
+            print(node->right, os);
+        }
+    }
+
+    Node<TKey, TValue>* copyTree(Node<TKey, TValue>* node) const {
+        if (!node) return nullptr;
+        Node<TKey, TValue>* newNode = new Node<TKey, TValue>(node->data.key, node->data.value);
+        newNode->left = copyTree(node->left);
+        newNode->right = copyTree(node->right);
+        newNode->height = node->height;
+        return newNode;
+    }
+
+    void clearTree(Node<TKey, TValue>* node) {
+        if (node) {
+            clearTree(node->left);
+            clearTree(node->right);
+            delete node;
+        }
+    }
 
 public:
+    AVLTree() : root(nullptr), treeSize(0) {}
+    AVLTree(const AVLTree& other) : root(copyTree(other.root)), treeSize(other.treeSize) {}
+    ~AVLTree() { clearTree(root); }
 
-     AVLTree() {
-        root = new Node();
-     }
-
-    void insert(Tkey key, Tvalue value) {
-        insert(root, key, value);
-    }
-
-    void erase(Tkey key) {
-         erase(root, key);
-     }
-
-    Tvalue find (Tkey key) {
-        return find(key, root);
-    }
-    void print () {
-        print(root);
-    }
-
-
-   bool operator!= (AVLTree& other) {
-       return !(this == other);
-   }
-
-    friend std::ostream& operator<< (std::ostream& os, const TTableRec& t) {
-        os << "key: " << t.key << " value: " << t.value << std::endl;
-        return os;
+    AVLTree& operator=(const AVLTree& other) {
+        if (this != &other) {
+            clearTree(root);
+            root = copyTree(other.root);
+            treeSize = other.treeSize;
         }
-
-    int size() {
-         return size(root);
-     }
-
-    bool operator==(const AVLTree<Tkey, Tvalue>& other) const {
-        return compareNodes(root, other.root);
+        return *this;
     }
 
-    bool operator!=(const AVLTree<Tkey, Tvalue>& other) const {
+    void insert(const TKey& key, const TValue& value) {
+        root = insert(root, key, value);
+    }
+
+    void erase(const TKey& key) {
+        root = erase(root, key);
+    }
+
+    size_t size() const {
+        return treeSize;
+    }
+
+    int height() const {
+        return getHeight(root);
+    }
+
+    TValue find(const TKey& key) const {
+        Node<TKey, TValue>* current = root;
+        while (current) {
+            if (key < current->data.key) {
+                current = current->left;
+            } else if (key > current->data.key) {
+                current = current->right;
+            } else {
+                return current->data.value;
+            }
+        }
+        throw std::runtime_error("Key not found");
+    }
+
+    bool operator==(const AVLTree& other) const {
+        return isEqual(root, other.root);
+    }
+
+    bool operator!=(const AVLTree& other) const {
         return !(*this == other);
     }
 
-//    void updateHeight(Node* node) {
-//         if (node) {
-//             if (!node->left && !node->right) {
-//                 node->height = 1;
-//             }
-//             else if (node->left && !node->right) {
-//                 node->height = 1 + node->left->height;
-//             }
-//             else if (!node->left && node->right) {
-//                 node->height = 1 + node->right->height;
-//             }
-//             else node->height = 1 + std::max(node->left->height, node->right->height);
-//        }
-//    }
-
-
-
+    friend std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
+        tree.print(tree.root, os);
+        return os;
+    }
 };
-#endif //POLINOM_AVL_TREE_H
+
+#endif // POLINOM_AVL_TREE_H
