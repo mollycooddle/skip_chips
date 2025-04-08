@@ -1,6 +1,3 @@
-//
-// Created by Софья Фролова  on 26.03.2025.
-//
 #include <gtest.h>
 #include "avl_tree.h"
 

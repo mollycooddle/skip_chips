@@ -1,6 +1,3 @@
-//
-// Created by Софья Фролова  on 26.03.2025.
-//
 
 #ifndef POLINOM_AVL_TREE_H
 #define POLINOM_AVL_TREE_H
@@ -10,93 +7,90 @@
 #include <queue>
 
 template <typename TKey, typename TValue>
-struct TTableRec {
-    TKey key;
-    TValue value;
-
-    TTableRec() = default;
-    TTableRec(const TKey& k, const TValue& v) : key(k), value(v) {}
-
-    bool operator==(const TTableRec& other) const {
-        return key == other.key && value == other.value;
-    }
-
-    bool operator!=(const TTableRec& other) const {
-        return !(*this == other);
-    }
-};
-
-template <typename TKey, typename TValue>
-struct Node {
-    TTableRec<TKey, TValue> data;
-    Node* left;
-    Node* right;
-    int height;
-
-    Node(const TKey& key, const TValue& value)
-            : data(key, value), left(nullptr), right(nullptr), height(1) {}
-};
-
-template <typename TKey, typename TValue>
 class AVLTree {
 private:
-    Node<TKey, TValue>* root;
-    size_t treeSize;
+    struct TTableRec {
+        TKey key;
+        TValue value;
 
-    int getHeight(Node<TKey, TValue>* node) const {
+        TTableRec() = default;
+        TTableRec(const TKey& k, const TValue& v) : key(k), value(v) {}
+
+        bool operator==(const TTableRec& other) const {
+            return key == other.key && value == other.value;
+        }
+
+        bool operator!=(const TTableRec& other) const {
+            return !(*this == other);
+        }
+    };
+
+    struct Node {
+        TTableRec data;
+        Node* left;
+        Node* right;
+        int height;
+
+        Node(const TKey& key, const TValue& value)
+                : data(key, value), left(nullptr), right(nullptr), height(1) {}
+    };
+    Node* root;
+    int treeSize;
+
+    int getHeight(Node* node) const {
         return node ? node->height : 0;
     }
 
-    int getBalanceFactor(Node<TKey, TValue>* node) const {
+    int getBalanceCoeff(Node* node) const {
         return node ? getHeight(node->left) - getHeight(node->right) : 0;
     }
 
-    void updateHeight(Node<TKey, TValue>* node) {
+    void updateHeight(Node* node) {
         if (node) {
             node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
         }
     }
 
-    Node<TKey, TValue>* rightRotate(Node<TKey, TValue>* y) {
-        Node<TKey, TValue>* x = y->left;
-        Node<TKey, TValue>* T2 = x->right;
+    Node* rightRotate(Node* y) {
+        Node* r1 = y->left;
+        Node* r2 = r1->right;
 
-        x->right = y;
-        y->left = T2;
+        r1->right = y;
+        y->left = r2;
 
         updateHeight(y);
-        updateHeight(x);
+        updateHeight(r1);
 
-        return x;
+        return r1;
     }
 
-    Node<TKey, TValue>* leftRotate(Node<TKey, TValue>* x) {
-        Node<TKey, TValue>* y = x->right;
-        Node<TKey, TValue>* T2 = y->left;
+    Node* leftRotate(Node* x) {
+        Node* r1 = x->right;
+        Node* r2 = r1->left;
 
-        y->left = x;
-        x->right = T2;
+        r1->left = x;
+        x->right = r2;
 
         updateHeight(x);
-        updateHeight(y);
+        updateHeight(r1);
 
-        return y;
+        return r1;
     }
 
-    Node<TKey, TValue>* balance(Node<TKey, TValue>* node) {
+    Node* balance(Node* node) {
         if (!node) return nullptr;
 
         updateHeight(node);
-        int balanceFactor = getBalanceFactor(node);
+        int balanceFactor = getBalanceCoeff(node);
 
         if (balanceFactor > 1) {
-            if (getBalanceFactor(node->left) < 0) {
+            if (getBalanceCoeff(node->left) < 0) {
                 node->left = leftRotate(node->left);
             }
             return rightRotate(node);
         }
         if (balanceFactor < -1) {
-            if (getBalanceFactor(node->right) > 0) {
+            if (getBalanceCoeff(node->right) > 0) {
                 node->right = rightRotate(node->right);
             }
             return leftRotate(node);
@@ -104,10 +98,10 @@ private:
         return node;
     }
 
-    Node<TKey, TValue>* insert(Node<TKey, TValue>* node, const TKey& key, const TValue& value) {
+    Node* insert(Node* node, const TKey& key, const TValue& value) {
         if (!node) {
             treeSize++;
-            return new Node<TKey, TValue>(key, value);
+            return new Node(key, value);
         }
 
         if (key < node->data.key) {
@@ -115,20 +109,20 @@ private:
         } else if (key > node->data.key) {
             node->right = insert(node->right, key, value);
         } else {
-            throw std::runtime_error("Key already exists");
+            throw std::runtime_error("ID already exists");
         }
 
         return balance(node);
     }
 
-    Node<TKey, TValue>* findMin(Node<TKey, TValue>* node) const {
+    Node* findMin(Node* node) const {
         while (node && node->left) {
             node = node->left;
         }
         return node;
     }
 
-    Node<TKey, TValue>* erase(Node<TKey, TValue>* node, const TKey& key) {
+    Node* erase(Node* node, const TKey& key) {
         if (!node) return nullptr;
 
         if (key < node->data.key) {
@@ -137,7 +131,7 @@ private:
             node->right = erase(node->right, key);
         } else {
             if (!node->left || !node->right) {
-                Node<TKey, TValue>* temp = node->left ? node->left : node->right;
+                Node* temp = node->left ? node->left : node->right;
                 if (!temp) {
                     temp = node;
                     node = nullptr;
@@ -147,7 +141,7 @@ private:
                 delete temp;
                 treeSize--;
             } else {
-                Node<TKey, TValue>* temp = findMin(node->right);
+                Node* temp = findMin(node->right);
                 node->data = temp->data;
                 node->right = erase(node->right, temp->data.key);
             }
@@ -158,15 +152,15 @@ private:
         return balance(node);
     }
 
-    bool isEqual(Node<TKey, TValue>* node1, Node<TKey, TValue>* node2) const {
+    bool equalTree(Node* node1, Node* node2) const {
         if (!node1 && !node2) return true;
         if (!node1 || !node2) return false;
         return node1->data == node2->data &&
-               isEqual(node1->left, node2->left) &&
-               isEqual(node1->right, node2->right);
+            equalTree(node1->left, node2->left) &&
+            equalTree(node1->right, node2->right);
     }
 
-    void print(Node<TKey, TValue>* node, std::ostream& os) const {
+    void print(Node* node, std::ostream& os) const {
         if (node) {
             print(node->left, os);
             os << node->data.key << ": " << node->data.value << "\n";
@@ -174,16 +168,16 @@ private:
         }
     }
 
-    Node<TKey, TValue>* copyTree(Node<TKey, TValue>* node) const {
+    Node* copyTree(Node* node) const {
         if (!node) return nullptr;
-        Node<TKey, TValue>* newNode = new Node<TKey, TValue>(node->data.key, node->data.value);
+        Node* newNode = new Node(node->data.key, node->data.value);
         newNode->left = copyTree(node->left);
         newNode->right = copyTree(node->right);
         newNode->height = node->height;
         return newNode;
     }
 
-    void clearTree(Node<TKey, TValue>* node) {
+    void clearTree(Node* node) {
         if (node) {
             clearTree(node->left);
             clearTree(node->right);
@@ -205,24 +199,27 @@ public:
         return *this;
     }
 
+    //работает за O(log n)
     void insert(const TKey& key, const TValue& value) {
         root = insert(root, key, value);
     }
 
+    //работает за O(log n)
     void erase(const TKey& key) {
         root = erase(root, key);
     }
 
-    size_t size() const {
+    int size() const {
         return treeSize;
     }
 
-    int height() const {
+    size_t height() const {
         return getHeight(root);
     }
 
+    //работает за O(log n)
     TValue find(const TKey& key) const {
-        Node<TKey, TValue>* current = root;
+        Node* current = root;
         while (current) {
             if (key < current->data.key) {
                 current = current->left;
@@ -232,11 +229,11 @@ public:
                 return current->data.value;
             }
         }
-        throw std::runtime_error("Key not found");
+        throw std::runtime_error("Id not found");
     }
 
     bool operator==(const AVLTree& other) const {
-        return isEqual(root, other.root);
+        return equalTree(root, other.root);
     }
 
     bool operator!=(const AVLTree& other) const {
@@ -248,5 +245,4 @@ public:
         return os;
     }
 };
-
 #endif // POLINOM_AVL_TREE_H
