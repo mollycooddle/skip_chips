@@ -62,10 +62,30 @@ struct Monom {
     friend Monom operator*  (const Monom& m1, const Monom& m2) {
         Monom res;
         res.coeff = m1.coeff * m2.coeff;
-        res.degree = m1.degree + m2.degree;
-        if (res.degree > 999) throw std::runtime_error("Degree of monomas > 9");
+
+        int deg1_x = m1.degree / 100;
+        int deg1_y = (m1.degree / 10) % 10;
+        int deg1_z = m1.degree % 10;
+
+        int deg2_x = m2.degree / 100;
+        int deg2_y = (m2.degree / 10) % 10;
+        int deg2_z = m2.degree % 10;
+
+        int new_x = deg1_x + deg2_x;
+        int new_y = deg1_y + deg2_y;
+        int new_z = deg1_z + deg2_z;
+
+        // Проверяем, чтобы каждая степень была ≤ 9
+        if (new_x > 9 || new_y > 9 || new_z > 9) {
+            throw std::runtime_error("Degree of x, y or z > 9 after multiplication");
+        }
+
+        // Формируем итоговую степень
+        res.degree = new_x * 100 + new_y * 10 + new_z;
         return res;
     }
+
+    //ИСПРАВЛЕНО 1 9 1 и т д
 
     Monom() = default;
 
@@ -150,12 +170,12 @@ struct Monom {
 class Polinom{
 protected:
     std::list<std::string> polinom;
-
 public:
     std::vector<Monom> monoms;
     Polinom() = default;
 
     explicit Polinom(const std::string& str) {
+        validatePolynomial(str);
         parsePolinom(str);
         parseMonom();
     }
@@ -178,16 +198,6 @@ public:
     friend bool operator!=(const Polinom& m1, const Polinom& m2) {
         return m1.monoms != m2.monoms;
     }
-
-    //bool operator==(Polinom& other) {
-    //    if (other.size() != this->size()) {
-    //        return false;
-    //    }
-    //    for (int i = 0; i < other.size(); i++) {
-    //        if (this->monoms[i] != other.monoms[i]) return false;
-    //    }
-    //    return true;
-    //}
 
     friend bool operator<(const Polinom& m1, const Polinom& m2) {
         int flag = 0;
@@ -213,25 +223,20 @@ private:
     void parsePolinom(const std::string& str) {
         std::string substr;
         for (int i = 0; i < str.length(); i++) {
-            if (i != 0) {
-                if (str[i] == '+') {
+            if ((str[i] == ' ' || (i != 0 && (str[i] == '+' || str[i] == '-')))) {
+                if (!substr.empty()) {
                     polinom.push_back(substr);
                     substr = "";
-                    continue;
                 }
-                else if (str[i] == '-') {
-                    polinom.push_back(substr);
+                if (str[i] == '-') {
                     substr = "-";
-                    continue;
                 }
-                else if (i == str.length() - 1) {
-                    substr += str[i];
-                    polinom.push_back(substr);
-                    substr = "";
-                    continue;
-                }
+                continue;
             }
             substr += str[i];
+        }
+        if (!substr.empty()) {
+            polinom.push_back(substr);
         }
     }
 
@@ -242,6 +247,28 @@ private:
         }
     }
 
+    void validateMonom(const std::string& monomStr) {
+        std::regex monomPattern(R"((-?\d+)x\^([0-9])y\^([0-9])z\^([0-9]))");
+
+        if (!std::regex_match(monomStr, monomPattern)) {
+            throw std::runtime_error("Invalid monom format: " + monomStr);
+        }
+    }
+
+    void validatePolynomial(const std::string& polynomialStr) {
+        std::stringstream ss(polynomialStr);
+        std::string monomStr;
+
+        while (ss >> monomStr) {
+            try {
+                validateMonom(monomStr);
+            }
+            catch (const std::runtime_error& e) {
+                throw std::runtime_error("Invalid polynomial: " + std::string(e.what()));
+            }
+        }
+    }
+
 public:
 
     Polinom operator+ (const Polinom& other) {
@@ -249,25 +276,30 @@ public:
         int i = 0, j = 0;
 
         while (i < this->size() && j < other.size()) {
-            const Monom& a = this->monoms[i];
-            const Monom& b = other.monoms[j];
+            Polinom result;
+            
+            result.monoms = monoms;
 
-            if (a.degree == b.degree) {
-                Monom sum = a + b;
-                if (sum.coeff != 0) {
-                    result.monoms.push_back(sum);
+            for (const auto& m2 : other.monoms) {
+                bool found = false;
+
+                for (auto& m_res : result.monoms) {
+                    if (m_res.degree == m2.degree) {
+                        m_res.coeff += m2.coeff;
+                        found = true;
+                        break;
+                    }
                 }
-                i++;
-                j++;
+
+                if (!found) {
+                    result.monoms.push_back(m2);
+                }
             }
-            else if (a.degree < b.degree) {
-                result.monoms.push_back(a);
-                i++;
-            }
-            else {
-                result.monoms.push_back(b);
-                j++;
-            }
+
+            result.monoms.erase(std::remove_if(result.monoms.begin(), result.monoms.end(), [](const Monom& m) { return m.coeff == 0.0; }),
+                                result.monoms.end());
+
+            return result;
         }
 
         while (i < this->size()) {
@@ -340,6 +372,23 @@ public:
 
         return result;
 
+    }
+
+    friend Polinom operator*(const Polinom& p1, const Polinom& p2) {
+        Polinom result;
+       
+        for (const auto& m1 : p1.monoms) {
+            Polinom temp;
+            for (const auto& m2 : p2.monoms) {
+                Monom product = m1 * m2;
+                if (product.coeff != 0) {
+                    temp.monoms.push_back(product);
+                }
+            }
+            result = result + temp;
+        }
+
+        return result;
     }
 
     friend std::ostream& operator<< (std::ostream& os, Polinom& pol) {

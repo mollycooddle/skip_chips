@@ -3,50 +3,52 @@
 #include "polinom.h"
 
 class DataBaseVector {
-    
-    std::vector<std::pair<int, Polinom>> sql;
 
 public:
+    std::vector<std::pair<std::string, Polinom>> sql;
     DataBaseVector() = default;
 
-    DataBaseVector(int id, Polinom pol) {
-        sql.push_back(std::pair<int, Polinom>(id, pol));
+    DataBaseVector(std::string id, Polinom pol) {
+        sql.push_back(std::pair<std::string, Polinom>(id, pol));
     }
 
-    void insert (int id, const Polinom& pol) {
+    void insert (std::string id, const Polinom& pol) {
         for (const auto& entry : sql) {
             if (entry.first == id) {
-                throw std::runtime_error("Duplicate ID: " + std::to_string(id));
+                throw std::runtime_error("Duplicate ID: " + id);
             }
         }
-        sql.push_back(std::pair<int, Polinom>(id, pol));
+        sql.push_back(std::pair<std::string, Polinom>(id, pol));
+    }
+    
+    void insert_no_check(std::string id, const Polinom& pol) {
+        sql.emplace_back(id, pol);
     }
 
-    void erase(int id) {
-        for (const auto& entry : sql) {
-            if (entry.first != id) {
-                throw std::runtime_error("Not find ID: " + std::to_string(id));
-            }
+    // ИСПРАВЛЕНО с проверкой; без проверки
+
+    void erase(std::string id) {
+        auto it = std::find_if(sql.begin(), sql.end(), [&id](const auto& entry) { return entry.first == id; });
+
+        if (it == sql.end()) {
+            throw std::runtime_error("Element with id " + id + " not found");
         }
 
-        for (auto it = sql.begin(); it != sql.end(); ) {
-            if (it->first == id) {
-                it = sql.erase(it);
-                return;
-            }
-            else {
-                ++it;
-            }
-        }
-        throw std::runtime_error("Element with id " + std::to_string(id) + " not found");
+        std::iter_swap(it, std::prev(sql.end()));
+        sql.pop_back();
     }
 
-    std::vector<std::pair<int, Polinom>>::iterator find(int id) {
+    // ИСПРАВЛЕНО переставить удаляемый с последним
+
+    std::vector<std::pair<std::string, Polinom>>::iterator find(std::string id) {
+        int f = 0;
         for (auto it = sql.begin(); it != sql.end(); ++it) {
             if (it->first == id) {
+                f = 1;
                 return it;
             }
         }
+
         return sql.end();
     }
 
