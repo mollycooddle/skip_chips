@@ -21,12 +21,11 @@ public:
 
         sql.push_back(std::pair<int, Polinom> (id, pol));
 
-        for (int i = sql.size() - 1; i > 0; i--) {
-            if (sql[i].first < sql[i - 1].first) {
-                std::swap(sql[i], sql[i - 1]);
-            }
-            else if (sql[i-1].first == id) {
-               // this->erase(id);
+        for (auto it = sql.end() - 1; it > sql.begin(); --it) {
+            auto prev_it = it - 1;
+            if (it->first < prev_it->first) {
+                swap(*it, *prev_it);
+            } else if (prev_it->first == id) {
                 throw std::runtime_error("Element with id " + std::to_string(id) + " already exists");
             }
         }
@@ -38,9 +37,9 @@ public:
             throw std::runtime_error("Table is empty");
         }
 
-        for (int i = 0; i < sql.size(); i++) {
-            if (sql[i].first == id) {
-                sql.erase(sql.begin() + i);
+        for (auto it = sql.begin(); it != sql.end(); ++it) {
+            if (it->first == id) {
+                sql.erase(it);
                 return;
             }
         }
@@ -49,21 +48,22 @@ public:
 
     //Использую бинарынй поиск, который выполняется за O(log n)
     Polinom find(int id) {
-    int left = 0;
-    int right = sql.size() - 1;
+        auto begin = sql.begin();
+        auto end = sql.end() - 1;
 
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        int current_id = sql[mid].first;
+        while (begin <= end) {
+            auto mid = begin + std::distance(begin, end) / 2; //std::distance(begin, end) вычисляет, сколько элементов в контейнере
 
-        if (current_id == id) {
-            return sql[mid].second;  // метод для std::pair
-        } else if (current_id < id) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
+            if (mid->first == id) {
+                return mid->second;
+            }
+            else if (mid->first < id) {
+                begin = mid + 1;
+            }
+            else {
+                end = mid - 1;
+            }
         }
-    }
 
     throw std::out_of_range("Element with id " + std::to_string(id) + " not found");
     }
@@ -84,8 +84,8 @@ public:
         return !(sql == other.sql);
     }
     void print() {
-        for (int i = 0; i < sql.size(); i++) {
-            std::cout << sql[i].first << " " << sql[i].second << std::endl;
+        for (auto it = sql.begin(); it != sql.end(); ++it) {
+            std::cout << it->first << " " << it->second << std::endl;
         }
     }
 

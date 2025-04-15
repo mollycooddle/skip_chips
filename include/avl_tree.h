@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <queue>
+#include <stack>
 
 template <typename TKey, typename TValue>
 class AVLTree {
@@ -34,8 +35,8 @@ private:
         Node(const TKey& key, const TValue& value)
                 : data(key, value), left(nullptr), right(nullptr), height(1) {}
     };
-    Node* root;
-    int treeSize;
+    Node* root = nullptr;
+    int treeSize = 0;
 
     int getHeight(Node* node) const {
         return node ? node->height : 0;
@@ -243,6 +244,74 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const AVLTree& tree) {
         tree.print(tree.root, os);
         return os;
+    }
+
+    class Iterator {
+    private:
+        std::stack<Node*> stack;
+        Node* current;
+
+        void FullStack(Node* node) {
+            while (node != nullptr) {
+                stack.push(node);
+                node = node->left;
+            }
+        }
+
+    public:
+        Iterator(Node* root) : current(nullptr) {
+            FullStack(root);
+            if (!stack.empty()) {
+                current = stack.top();
+                stack.pop();
+            }
+        }
+
+        Iterator() : current(nullptr) {}
+
+        TTableRec& operator*() const {
+            if (current == nullptr) {
+                throw std::out_of_range("Iterator is out of range");
+            }
+            return current->data;
+        }
+
+        TTableRec* operator->() const {
+            if (current == nullptr) {
+                throw std::out_of_range("Iterator is out of range");
+            }
+            return &(current->data);
+        }
+
+        Iterator& operator++() {
+            if (current == nullptr) {
+                return *this;
+            }
+            FullStack(current->right);
+            if (stack.empty()) {
+                current = nullptr;
+            } else {
+                current = stack.top();
+                stack.pop();
+            }
+            return *this;
+        }
+
+        bool operator!=(const Iterator& other) const {
+            return current != other.current;
+        }
+
+        bool operator==(const Iterator& other) const {
+            return current == other.current;
+        }
+    };
+
+    Iterator begin() {
+        return Iterator(root);
+    }
+
+    Iterator end() {
+        return Iterator();
     }
 };
 #endif // POLINOM_AVL_TREE_H
