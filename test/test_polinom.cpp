@@ -135,11 +135,11 @@ TEST(polinom, can_mul_polinom_with_high_degrees) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-TEST(DataBaseVector, can_create_DataBaseVector) {
+TEST(DataBaseVectorTest, can_create_DataBaseVector) {
     Polinom pol("2x^6y^7z^8 2x^6y^7z^8 2x^6y^7z^8");
     ASSERT_NO_THROW(DataBaseVector s("1", pol));
 }
-TEST(DataBaseVector, can_create_null_DataBaseVector) {
+TEST(DataBaseVectorTest, can_create_null_DataBaseVector) {
     Polinom pol("");
     ASSERT_NO_THROW(DataBaseVector s("0", pol));
 }
