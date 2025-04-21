@@ -10,6 +10,8 @@
 template <typename TKey, typename TValue>
 class AVLTree {
 private:
+
+
     struct TTableRec {
         TKey key;
         TValue value;

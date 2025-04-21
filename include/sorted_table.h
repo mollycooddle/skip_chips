@@ -89,4 +89,28 @@ public:
         }
     }
 
+    class Iterator {
+        std::vector<std::pair<int, Polinom>>::iterator iter;
+
+    public:
+        Iterator(std::vector<std::pair<int, Polinom>>::iterator it) : iter(it) {}
+
+        Iterator() : iter(){}
+
+        std::pair<int, Polinom>& operator*() { return *iter; }
+
+        Iterator& operator++() { ++iter; return *this; }
+
+        bool operator!=(const Iterator& other) const { return iter != other.iter; }
+
+        bool operator==(const Iterator& other) const { return iter == other.iter; }
+
+        std::pair<int, Polinom>* operator->() { return &(*iter); }
+    };
+
+    Iterator begin() { return Iterator(sql.begin()); }
+
+    Iterator end() { return Iterator(sql.end()); }
+
+
 };

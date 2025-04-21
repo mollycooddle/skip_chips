@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 
 option(BUILD_SAMPLES ON)
 
@@ -11,6 +11,9 @@ enable_testing()  # defines BUILD_TESTING
 set(MP2_TESTS   "test_${PROJECT_NAME}")
 set(MP2_CUSTOM_PROJECT "${PROJECT_NAME}")
 set(MP2_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+set(CMAKE_CXX_STANDARD 17)  # Например, C++17
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(include)
 

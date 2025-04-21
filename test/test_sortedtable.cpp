@@ -169,3 +169,30 @@ TEST(SortedTable, ConstructorWithParametersAddsElement) {
     SortedTable t(1, p);
     EXPECT_EQ(t.size(), 1);
 }
+
+TEST(SortedTable, IteratorIncrement) {
+    SortedTable table;
+
+    Polinom p("2x^6y^7z^8+8x^5y^7z^8");
+    Polinom p2("14x^9y^7z^8+11x^7y^7z^8");
+    //Polinom p3("14x^9y^7z^8+11x^7y^7z^8");
+
+
+    table.insert(1, p);
+    table.insert(2, p2);
+    table.insert(5, p2);
+    table.insert(4, p2);
+    table.insert(7, p2);
+
+
+    auto it = table.begin();
+    auto prev = it;
+    for (auto it1 = table.begin(); it1 != table.end(); ++it1) {
+        std::cout << it->first << std::endl;
+        ++it;
+    }
+
+    EXPECT_EQ(table.end(), it);
+}
+
+
