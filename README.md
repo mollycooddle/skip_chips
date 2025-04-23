@@ -22,16 +22,16 @@
 	  - [X] unsorted table - неупорядоченные
 		### __mollycooddle__
 
-  - [ ] Hash-таблица
-	  - [ ] hash table
+  - [X] Hash-таблица
+	  - [X] hash table
 		### __cuttty__
-	  - [ ] hash table
+	  - [X] hash table
 		### __mollycooddle__
 
-  - [ ] Поисковое дерево
-	- [ ] красно чёрное дерево
+  - [X] Поисковое дерево
+	- [X] красно чёрное дерево
 		### __mollycooddle__
-	- [ ] ABL
+	- [X] ABL
 		### __cuttty__
 
   ## Deadline:
