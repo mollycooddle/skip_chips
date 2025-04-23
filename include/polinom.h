@@ -310,7 +310,7 @@ public:
         return result;
     }
 
-    //O(n)
+    //O(n) O(n+m)
 
     Polinom operator- (const Polinom& other) {
         Polinom result;
