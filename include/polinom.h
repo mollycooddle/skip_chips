@@ -271,49 +271,47 @@ private:
 
 public:
 
-    Polinom operator+ (const Polinom& other) {
+    Polinom operator+(const Polinom& other) const {
         Polinom result;
-        int i = 0, j = 0;
+        result.monoms.reserve(this->monoms.size() + other.monoms.size());
 
-        while (i < this->size() && j < other.size()) {
-            Polinom result;
-            
-            result.monoms = monoms;
+        auto it1 = this->monoms.begin();
+        auto it2 = other.monoms.begin();
 
-            for (const auto& m2 : other.monoms) {
-                bool found = false;
-
-                for (auto& m_res : result.monoms) {
-                    if (m_res.degree == m2.degree) {
-                        m_res.coeff += m2.coeff;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    result.monoms.push_back(m2);
-                }
+        while (it1 != this->monoms.end() && it2 != other.monoms.end()) {
+            if (it1->degree < it2->degree) {
+                result.monoms.push_back(*it1);
+                ++it1;
             }
-
-            result.monoms.erase(std::remove_if(result.monoms.begin(), result.monoms.end(), [](const Monom& m) { return m.coeff == 0.0; }),
-                                result.monoms.end());
-
-            return result;
+            else if (it2->degree < it1->degree) {
+                result.monoms.push_back(*it2);
+                ++it2;
+            }
+            else {
+                Monom sum = *it1 + *it2;
+                if (sum.coeff != 0.0) {
+                    result.monoms.push_back(sum);
+                }
+                ++it1;
+                ++it2;
+            }
         }
 
-        while (i < this->size()) {
-            result.monoms.push_back(this->monoms[i]);
-            i++;
+        while (it1 != this->monoms.end()) {
+            result.monoms.push_back(*it1);
+            ++it1;
         }
 
-        while (j < other.size()) {
-            result.monoms.push_back(other.monoms[j]);
-            j++;
+        while (it2 != other.monoms.end()) {
+            result.monoms.push_back(*it2);
+            ++it2;
         }
 
         return result;
     }
+
+    //O(n)
+
     Polinom operator- (const Polinom& other) {
         Polinom result;
         int i = 0, j = 0;
