@@ -167,28 +167,25 @@ int main() {
             if (action == 1) {
                 cout << "Введите ID полинома: ";
                     string id;
-                    cin >> id;
-                    cout << "Введите полином (например, '2x^3y^1z^2 1x^0y^0z^0'): ";
+                    getline(cin, id);
+                    cout << "Введите полином (например, '2x^3y^1z^2 1x^1y^1z^1'): ";
                     string polyStr;
-                    cin >> polyStr;
+                    getline(cin, polyStr);
                     Polinom poly(polyStr);
                     stringDb->insert(id, poly);
-                cout << "Полином добавлен!\n";
-                action = 0;
+                    cout << "Полином добавлен!\n";
             } else if (action == 2) {
-                cout << "Введите ID для удаления: ";
+                    cout << "Введите ID для удаления: ";
                     string id;
-                    cin >> id;
+                    getline(cin, id);
                     stringDb->erase(id);
-                cout << "Полином удалён.\n";
-                action = 0;
+                    cout << "Полином удалён.\n";
             } else if (action == 3) {
-                cout << "Введите ID для поиска: ";
+                    cout << "Введите ID для поиска: ";
                     string id;
-                    cin >> id;
+                    getline(cin, id);
                     Polinom result = stringDb->find(id);
                     cout << "Найден полином: " << result << "\n";
-                    action = 0;
             } else {
                 cout << "Неверное действие!\n";
                 return 1;
