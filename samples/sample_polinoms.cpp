@@ -1,5 +1,4 @@
-﻿#include "polinom.h"
-#include "polinom1.h"
+﻿#include "polinom1.h"
 #include "unsorted_table.h"
 #include "sorted_table.h"
 #include "RBTree.h"
@@ -160,6 +159,7 @@ int main() {
 
         int action;
         cin >> action;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера
 
         if (action == 4) break;
 
@@ -174,18 +174,21 @@ int main() {
                     Polinom poly(polyStr);
                     stringDb->insert(id, poly);
                 cout << "Полином добавлен!\n";
+                action = 0;
             } else if (action == 2) {
                 cout << "Введите ID для удаления: ";
                     string id;
                     cin >> id;
                     stringDb->erase(id);
                 cout << "Полином удалён.\n";
+                action = 0;
             } else if (action == 3) {
                 cout << "Введите ID для поиска: ";
                     string id;
                     cin >> id;
                     Polinom result = stringDb->find(id);
                     cout << "Найден полином: " << result << "\n";
+                    action = 0;
             } else {
                 cout << "Неверное действие!\n";
                 return 1;
