@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <regex>
 #include <sstream>
+#include <functional>
 
 
 struct Monom {
@@ -356,24 +357,41 @@ public:
     }
 
 
-    Polinom operator* (const Polinom& other) {
+    Polinom operator*(const Polinom& other) {
         Polinom result;
-
-        for (int i = 0; i < this->size(); i++) {
-            for (int j = 0; j < other.size(); j++) {
-                result.monoms.push_back(this->monoms[i] * other.monoms[j]);
+        for (const auto& m1 : monoms) {
+            for (const auto& m2 : other.monoms) {
+                try {
+                    Monom product = m1 * m2;
+                    // Объединяем мономы с одинаковыми степенями
+                    bool found = false;
+                    for (auto& m : result.monoms) {
+                        if (m.degree == product.degree) {
+                            m.coeff += product.coeff;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        result.monoms.push_back(product);
+                    }
+                }
+                catch (const std::runtime_error& e) {
+                    // Игнорируем мономы с превышением степени
+                }
             }
         }
-
-        for (int i = 0; i < result.size(); i++) {
-            if (result.monoms[i].degree > 999) throw std::runtime_error("Degree of monomas > 9");
-        }
-
+        // Удаляем нулевые коэффициенты и сортируем
+        result.monoms.erase(
+            remove_if(result.monoms.begin(), result.monoms.end(),
+                [](const Monom& m) { return m.coeff == 0; }),
+            result.monoms.end()
+        );
+        sort(result.monoms.begin(), result.monoms.end(), std::greater<Monom>());
         return result;
-
     }
 
-    friend Polinom operator*(const Polinom& p1, const Polinom& p2) {
+    /*friend Polinom operator*(const Polinom& p1, const Polinom& p2) {
         Polinom result;
        
         for (const auto& m1 : p1.monoms) {
@@ -388,12 +406,26 @@ public:
         }
 
         return result;
-    }
+    }*/
 
     friend std::ostream& operator<< (std::ostream& os, Polinom& pol) {
         for (int i = 0; i < pol.size(); i++) {
             std::cout << pol.monoms[i] << std::endl;
         }
         return os;
+    }
+
+    std::string toString() const {
+        std::stringstream ss;
+        for (const auto& monom : monoms) {
+            ss << monom.coeff << "x^" << (monom.degree / 100)
+                << "y^" << ((monom.degree / 10) % 10)
+                << "z^" << (monom.degree % 10) << " ";
+        }
+        std::string result = ss.str();
+        if (!result.empty()) {
+            result.pop_back(); // Удаляем последний пробел
+        }
+        return result;
     }
 };
